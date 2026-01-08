@@ -1,0 +1,22 @@
+{
+    "SearchDirectories": {
+        ".png/.jpeg": [
+            "picture",
+            "photo",
+            "photos",
+            "pic",
+            "pics",
+            "image",
+            "images"
+        ],
+        ".html": [
+            "html"
+        ],
+        ".css": [
+            "css"
+        ],
+        ".js": [
+            "js"
+        ]
+    }
+}
