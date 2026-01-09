@@ -50,6 +50,7 @@ function Group-Files {
     
     [CmdletBinding()]
     param (
+        [String]$Path = ".",
         [string[]]$Only,
         [switch]$Force,
         [switch]$Config
@@ -60,7 +61,7 @@ function Group-Files {
     }
     
     process {
-        # init config files and check their exist
+        # Init config files and check their exist
         $scriptDir = $PSScriptRoot
         $configCreateDirsPath = Join-Path $scriptDir "ConfCreateDirectories.json"
         $configSearchDirsPath = Join-Path $scriptDir "ConfSearchDirectories.json"
@@ -77,26 +78,30 @@ function Group-Files {
             Start-Process $scriptDir
             return
         }
-
-        $files = Get-ChildItem -File # all files in current location
-        $directories = Get-ChildItem -Directory | Where-Object { -not $_.Name.StartsWith('.') } # all directories in current location
+        
+        $files = Get-ChildItem $Path -File # all files in location
+        $directories = Get-ChildItem $Path -Directory | Where-Object { -not $_.Name.StartsWith('.') } # all directories in  location
         foreach ($category in $configSearchDirs.SearchDirectories.PSObject.Properties) { 
-            if ($Only -and -not (($category.Name -split '/') | Where-Object { $_ -in $Only })) {continue}            
+            # Skip category if not in '-Only'
+            if ($Only -and -not (($category.Name -split "/") | Where-Object { $_ -in $Only })) {continue}
+            
             $allowedExtentions = $category.Name -split "/"
             $currentFiles = $files | Where-Object { $_.Extension -in $allowedExtentions } 
             $currentDirectory = @($directories | Where-Object { $_.Name -in $category.Value })[0]
 
+            # If dir for category not exist but flag '-Force' active
             if (($null -eq $currentDirectory) -and $Force -and $currentFiles) {
                 Write-Verbose "We have '-Force' and don't have dir for $currentFiles, so we add this dir"
-                $currentDirectory = $configCreateDirs.PSObject.Properties[$category.Name].Value
+                $currentDirectory = Join-Path $Path $configCreateDirs.PSObject.Properties[$category.Name].Value
                 mkdir $currentDirectory
             }
-
+            
+            # Moving files
             if ($currentDirectory -and $currentFiles) {
                 Write-Verbose "Found directory and file(s). Processing $($currentFiles.Count) file(s)."
     
                 foreach ($file in $currentFiles) {
-                    $destinationPath = Join-Path -Path $currentDirectory -ChildPath $file.Name
+                    $destinationPath = Join-Path $currentDirectory $file.Name
 
                     if (Test-Path $destinationPath) {
                         if ($Force) {
