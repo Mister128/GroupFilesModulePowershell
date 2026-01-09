@@ -1,5 +1,5 @@
 @{
-    ModuleVersion = '0.5'
+    ModuleVersion = '1.0'
     RootModule    = 'GroupFiles.psm1'
     
     Author = 'Alexey Kudryakov (Mister Y)'
