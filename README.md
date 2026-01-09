@@ -127,3 +127,7 @@ Install-Module -Name Pester -Force
 # Run tests
 Invoke-Pester -Path ".\Test\Test.ps1"
 ```
+
+## License
+
+This project is open source and available under the MIT License.
