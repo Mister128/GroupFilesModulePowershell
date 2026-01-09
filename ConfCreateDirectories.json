@@ -1,6 +1,6 @@
 {
-    "png/jpeg": "pictures",
-    "html": "html",
-    "css": "css",
-    "js": "js"
+    ".png/.jpeg": "pictures",
+    ".html": "html",
+    ".css": "css",
+    ".js": "js"
 }
