@@ -18,7 +18,7 @@ function Group-Files {
         Example: -Only ".html", ".css"
 
     .PARAMETER Config
-        Opens the directory containing the configuration files 
+        Opens the directory containing the configuration files
         (ConfSearchDirectories.json and ConfCreateDirectories.json)
 
     .EXAMPLE
@@ -46,8 +46,8 @@ function Group-Files {
         - ConfSearchDirectories.json
         - ConfCreateDirectories.json
     #>
-    
-    
+
+
     [CmdletBinding()]
     param (
         [String]$Path = ".",
@@ -55,19 +55,18 @@ function Group-Files {
         [switch]$Force,
         [switch]$Config
     )
-    
+
     begin {
         Write-Verbose "Starting sort file(s)"
     }
-    
+
     process {
         # Init config files and check their exist
         $scriptDir = $PSScriptRoot
         $configCreateDirsPath = Join-Path $scriptDir "ConfCreateDirectories.json"
         $configSearchDirsPath = Join-Path $scriptDir "ConfSearchDirectories.json"
         if (-not (Test-Path $configCreateDirsPath) -or -not (Test-Path $configSearchDirsPath)) {
-            Write-Error "One or both config files are missing!"
-            return
+            throw "One or both config files are missing!"
         }
         else {
             $configCreateDirs = Get-Content $configCreateDirsPath | ConvertFrom-Json
@@ -78,15 +77,15 @@ function Group-Files {
             Start-Process $scriptDir
             return
         }
-        
+
         $files = Get-ChildItem $Path -File # all files in location
         $directories = Get-ChildItem $Path -Directory | Where-Object { -not $_.Name.StartsWith('.') } # all directories in  location
-        foreach ($category in $configSearchDirs.SearchDirectories.PSObject.Properties) { 
+        foreach ($category in $configSearchDirs.SearchDirectories.PSObject.Properties) {
             # Skip category if not in '-Only'
             if ($Only -and -not (($category.Name -split "/") | Where-Object { $_ -in $Only })) {continue}
-            
+
             $allowedExtentions = $category.Name -split "/"
-            $currentFiles = $files | Where-Object { $_.Extension -in $allowedExtentions } 
+            $currentFiles = $files | Where-Object { $_.Extension -in $allowedExtentions }
             $currentDirectory = @($directories | Where-Object { $_.Name -in $category.Value })[0]
 
             # If dir for category not exist but flag '-Force' active
@@ -99,7 +98,7 @@ function Group-Files {
             # Moving files
             if ($currentDirectory -and $currentFiles) {
                 Write-Verbose "Found directory and file(s). Processing $($currentFiles.Count) file(s)."
-    
+                
                 foreach ($file in $currentFiles) {
                     $destinationPath = Join-Path $currentDirectory $file.Name
 
@@ -117,7 +116,7 @@ function Group-Files {
             }
         }
     }
-    
+
     end {
         Write-Verbose "Finish sort file(s)"
     }

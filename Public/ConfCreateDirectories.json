@@ -2,5 +2,6 @@
     ".png/.jpeg": "pictures",
     ".html": "html",
     ".css": "css",
-    ".js": "js"
+    ".js": "js",
+    ".mp3/.ogg": "musics"
 }

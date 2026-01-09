@@ -13,10 +13,20 @@
             "html"
         ],
         ".css": [
-            "css"
+            "css",
+            "style",
+            "styles"
         ],
         ".js": [
-            "js"
+            "js",
+            "script",
+            "scripts"
+        ],
+        ".mp3/.ogg": [
+            "music",
+            "musics",
+            "song",
+            "songs"
         ]
     }
 }
