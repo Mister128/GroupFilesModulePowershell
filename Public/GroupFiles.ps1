@@ -17,6 +17,10 @@ function Group-Files {
         Extensions must exactly match those in ConfSearchDirectories.json (including the leading dot).
         Example: -Only ".html", ".css"
 
+    .PARAMETER Config
+        Opens the directory containing the configuration files 
+        (ConfSearchDirectories.json and ConfCreateDirectories.json)
+
     .EXAMPLE
         Group-Files -Verbose
         Sorts all files according to configuration, with detailed output.
@@ -33,6 +37,10 @@ function Group-Files {
         Group-Files -Only ".html" -Force
         Sorts only HTML-related files, creates target directory if missing, and overwrites duplicates.
 
+    .EXAMPLE
+        Group-Files -Config
+        Opens the folder containing ConfSearchDirectories.json and ConfCreateDirectories.json for editing.
+
     .NOTES
         Requires two JSON files in the current working directory:
         - ConfSearchDirectories.json
@@ -43,7 +51,8 @@ function Group-Files {
     [CmdletBinding()]
     param (
         [string[]]$Only,
-        [switch]$Force
+        [switch]$Force,
+        [switch]$Config
     )
     
     begin {
@@ -52,15 +61,21 @@ function Group-Files {
     
     process {
         # init config files and check their exist
-        $configCreateDirs = "./ConfCreateDirectories.json"
-        $configSearchDirs = "./ConfSearchDirectories.json"
-        if (-not (Test-Path $configCreateDirs) -or -not (Test-Path $configSearchDirs)) {
+        $scriptDir = $PSScriptRoot
+        $configCreateDirsPath = Join-Path $scriptDir "ConfCreateDirectories.json"
+        $configSearchDirsPath = Join-Path $scriptDir "ConfSearchDirectories.json"
+        if (-not (Test-Path $configCreateDirsPath) -or -not (Test-Path $configSearchDirsPath)) {
             Write-Error "One or both config files are missing!"
             return
         }
         else {
-            $configCreateDirs = Get-Content $configCreateDirs | ConvertFrom-Json
-            $configSearchDirs = Get-Content $configSearchDirs | ConvertFrom-Json
+            $configCreateDirs = Get-Content $configCreateDirsPath | ConvertFrom-Json
+            $configSearchDirs = Get-Content $configSearchDirsPath | ConvertFrom-Json
+        }
+
+        if ($Config) {
+            Start-Process $scriptDir
+            return
         }
 
         $files = Get-ChildItem -File # all files in current location
@@ -102,4 +117,4 @@ function Group-Files {
         Write-Verbose "Finish sort file(s)"
     }
 }
-Group-Files -Force -Verbose
+Group-Files -Config
