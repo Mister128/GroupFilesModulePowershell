@@ -117,4 +117,3 @@ function Group-Files {
         Write-Verbose "Finish sort file(s)"
     }
 }
-Group-Files -Config
